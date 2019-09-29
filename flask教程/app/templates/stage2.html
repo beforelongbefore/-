@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>
+    {% if g.gid%} 第{{g.gid}}场游戏：{% endif %}
+    <a href="{{ url_for('decisions_1', gameid = g.id) }}">第一阶段</a>----------第二阶段
+</h1>
+    {% if g.stage>1 %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.dc.label }}<br>
+            {{ form.dc(size=32) }}<br>
+            {% for error in form.dc.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.location.label }}<br>
+            {{ form.location(cols=50, rows=4) }}<br>
+            {% for error in form.location.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <h1>
+    <a href="">结果页面</a>
+    <br>
+    <a href="{{ url_for('simulation',gameid=g.id) }}">开始仿真</a></h1>
+{% else %}
+该场次游戏第二阶段尚未开放！请完成第一阶段仿真
+{% endif %}
+
+{% endblock %}
