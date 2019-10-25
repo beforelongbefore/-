@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, RadioField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo,Length
 from app.models import User
 from wtforms import TextAreaField
@@ -47,11 +47,14 @@ class EditProfileForm(FlaskForm):
                 raise ValidationError('Please use a different username.')
 
 class Decisions1Form(FlaskForm):
-    supplier = StringField('供应商', validators=[DataRequired()])
-    workers = StringField('员工数量', validators=[DataRequired()])
+    batch = StringField('订货批量', validators=[DataRequired()])
+    quality = RadioField('订货质量', choices=[('h','高'),('m','中'),('l','低')],validators=[DataRequired()])
+    contract = RadioField('合约类型',choices=[('w','the wholesale price contract'),('m','the buyback contract'),('s','revenue sharing'),('e','EOQ')],validators=[DataRequired()])
+    stock = RadioField('库存管理模式',choices=[('t','传统模式'),('c','CS'),('v','VMI')],validators=[DataRequired()])
     submit = SubmitField('保存')
 
 class Decisions2Form(FlaskForm):
     dc = StringField('仓库', validators=[DataRequired()])
     location = StringField('选址', validators=[DataRequired()])
     submit = SubmitField('保存')
+

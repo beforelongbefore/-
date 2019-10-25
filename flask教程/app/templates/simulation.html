@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
     <h1>调用仿真模型接口</h1>
-    计算完成后，在数据库中添加该game的stage2信息
+    计算完成后，在数据库中添加该game的stage2信息, 并将result加入到数据库
+    <a href="{{ url_for('decisions_1', gameid=gameid)}}">返回</a>
 {% endblock %}

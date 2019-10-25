@@ -3,7 +3,7 @@ from app import app
 from app.forms import LoginForm
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user
-from app.models import User, Game, Decision1, Decision2
+from app.models import User, Game, Decision1, Decision2, Result1
 from flask_login import logout_user
 from flask_login import login_required
 from flask import request
@@ -117,21 +117,37 @@ def edit_profile():
 @app.route('/stage1/<gameid>', methods=['GET', 'POST'])
 @login_required
 def decisions_1(gameid):
-    d = Decision1.query.filter_by(gameid=gameid).first_or_404()
+    d = Decision1.query.filter_by(gameid=gameid).first() #知道gameid，并且默认知道stage为1，所以可以定位
     #gid = Game.query.filter_by(id=gameid).first_or_404().gid
     g = d.game
     form = Decisions1Form()
     if form.validate_on_submit():
-        d.supplier = form.supplier.data
-        d.workers = form.workers.data
+        d.quality = form.quality.data
+        d.batch = form.batch.data
+        d.stock = form.stock.data
+        d.contract = form.contract.data
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('decisions_1',gameid=gameid))
     elif request.method == 'GET':
-        form.supplier.data = d.supplier
-        form.workers.data = d.workers
+        form.quality.data = d.quality
+        form.batch.data = d.batch
+        form.stock.data = d.stock
+        form.contract.data = d.contract
     return render_template('stage1.html', title='第一阶段',
-                           form=form, g=g)
+                           form=form, g=g) #注意这里传进网页的是game对象
+
+@app.route('/stage1/help/<gameid>', methods=['GET', 'POST'])
+@login_required
+def help_satge1(gameid):
+    d = Decision1.query.filter_by(gameid=gameid).first() #知道gameid，并且默认知道stage为1，所以可以定位
+    #gid = Game.query.filter_by(id=gameid).first_or_404().gid
+    g = d.game
+
+    return render_template('help_stage1.html', title='第一阶段',
+                        g=g) #注意这里传进网页的是game对象
+
+
 
 
 @app.route('/newgame/', methods=['GET', 'POST'])
@@ -147,7 +163,7 @@ def newgame():
     db.session.add(g)
     db.session.commit()
     gameid = Game.query.filter_by(gid=maxid+1, user_id=current_user.id).first_or_404().id
-    d = Decision1(supplier='', workers=0, gameid=gameid)
+    d = Decision1(gameid=gameid) #初始化decision1
     db.session.add(d)
     db.session.commit()
     d = Decision2(dc='', location=0, gameid=gameid)
@@ -182,5 +198,14 @@ def decisions_2(gameid):
 def simulation(gameid):
     g=Game.query.filter_by(id=gameid).first()
     g.stage = 2 #更新game的stage，注意这里不用first因为一个d只返回单个game
+    r = Result1(gameid=gameid)
+    db.session.add(r)
     db.session.commit()
     return render_template('simulation.html',title='仿真界面', gameid=gameid)
+
+@app.route('/stage1/result/<gameid>', methods=['GET', 'POST'])
+@login_required
+def result(gameid):
+    g=Game.query.filter_by(id=gameid).first()
+    r=g.result1.first()
+    return render_template('result.html',title='结果界面', r=r, g=g)

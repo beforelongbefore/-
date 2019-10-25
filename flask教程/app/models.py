@@ -47,11 +47,15 @@ class Game(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     decision1 = db.relationship('Decision1', backref='game', lazy='dynamic')
     decision2 = db.relationship('Decision2', backref='game', lazy='dynamic')
+    result1 = db.relationship('Result1', backref='game', lazy='dynamic')
+    #增加备注，删除功能
 
 class Decision1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    supplier = db.Column(db.String(140))
-    workers = db.Column(db.Integer)
+    stock = db.Column(db.String(140))
+    contract = db.Column(db.String(140))
+    quality = db.Column(db.String(140))
+    batch = db.Column(db.Integer)
     gameid = db.Column(db.Integer, db.ForeignKey('game.id'))
 
 
@@ -60,6 +64,18 @@ class Decision2(db.Model):
     dc = db.Column(db.String(140))
     location = db.Column(db.Integer)
     #user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 只需要game id就能够定位到用户和game
+    gameid = db.Column(db.Integer, db.ForeignKey('game.id'))
+
+
+class Result1(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    revenue = db.Column(db.DECIMAL(10, 2), default=0.0)
+    sales = db.Column(db.DECIMAL(10, 2), default=0.0)
+    penalty = db.Column(db.DECIMAL(10, 2), default=0.0)
+    salvage = db.Column(db.DECIMAL(10, 2), default=0.0)
+    procure = db.Column(db.DECIMAL(10, 2), default=0.0)
+    manage = db.Column(db.DECIMAL(10, 2), default=0.0)
+    # 以后可以加一个state，用于表示是否计算完成。在计算完成后更新为1，此时展示计算结果
     gameid = db.Column(db.Integer, db.ForeignKey('game.id'))
 
 

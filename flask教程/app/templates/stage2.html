@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
 <h1>
     {% if g.gid%} 第{{g.gid}}场游戏：{% endif %}
     <a href="{{ url_for('decisions_1', gameid = g.id) }}">第一阶段</a>----------第二阶段

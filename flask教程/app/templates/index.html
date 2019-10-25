@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
+{% if current_user.is_anonymous %}
+<h1>Welcome!</h1>
+{% else %}
     <h1>Hi, {{ current_user.username }}!</h1>
+{% endif %}
     欢迎来到ERP沙盘模拟游戏！<br>
     您将在这里模拟经营连锁便利店，并在不同阶段做出不同的决策。
-    快来把你的连锁店做大做强吧！
+    快来把你的连锁店做大做强吧！<br>
+{% if current_user.is_anonymous %}
+{% else %}
+ 进入<a href="{{ url_for('user', username=current_user.username) }}">我的游戏</a>
+{% endif %}
 {% endblock %}

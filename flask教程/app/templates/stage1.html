@@ -1,35 +1,42 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
+{% block app_content %}
 <h1>
     {% if g.gid%} 第{{g.gid}}场游戏：{% endif %}
     第一阶段----------<a href="{{ url_for('decisions_2', gameid = g.id) }}">第二阶段</a>
 </h1>
-    <form action="" method="post">
+    <form action="{{ url_for('decisions_1', gameid = g.id) }}" method="post">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.supplier.label }}<br>
-            {{ form.supplier(size=32) }}<br>
-            {% for error in form.supplier.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.workers.label }}<br>
-            {{ form.workers(cols=50, rows=4) }}<br>
-            {% for error in form.workers.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
+
+        {% from "_field.html" import render_field %}
+        <table>
+            <a href="{{ url_for('help_satge1', gameid = g.id) }}">游戏参数说明</a>
+            {{ render_field(form.quality)}}
+            {{ render_field(form.batch)}}
+            {{ render_field(form.contract)}}
+            {{ render_field(form.stock)}}
+        </table>
+
+
+
 {% if g.stage<2 %}
         <p>{{ form.submit() }}</p>
-        {% endif %}
     </form>
+{% endif %}
+
 
 <h1>
-    <a href="">结果页面</a>
+    <a href="{{ url_for('result', gameid = g.id) }}">结果页面</a>
     {% if g.stage<2 %}
     <br>
     <a href="{{ url_for('simulation', gameid = g.id) }}">开始仿真</a></h1>
+    {% else %}
+    <br>仿真结束！可查看结果和进入第二阶段。
 {% endif %}
+
+
+
 {% endblock %}
+
+

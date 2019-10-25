@@ -1,0 +1,32 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - ERP沙盘模拟</title>
+        {% else %}
+        <title>ERP沙盘模拟</title>
+        {% endif %}
+    </head>
+    <body>
+          <div>
+      便利店沙盘模拟游戏:
+      <a href="{{ url_for('index') }}">首页</a>
+      {% if current_user.is_anonymous %}
+      <a href="{{ url_for('login') }}">登录</a>
+      {% else %}
+      <a href="{{ url_for('user', username=current_user.username) }}">我的游戏</a>
+      <a href="{{ url_for('logout') }}">退出登录</a>
+      {% endif %}
+    </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>

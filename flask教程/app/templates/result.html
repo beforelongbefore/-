@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>第一轮仿真结果</h1>
+
+
+{% if g.stage>1 %}
+ <table>
+
+        <tr>
+            <td>零售商净利润 </td>
+            <td>{{ r.revenue }}</td>
+        </tr>
+     <tr>
+            <td>零售商销售额 </td>
+            <td>{{ r.sales }}</td>
+        </tr>
+     <tr>
+            <td>惩罚成本 </td>
+            <td>{{ r.penalty }}</td>
+        </tr>
+     <tr>
+            <td>库存残值 </td>
+            <td>{{ r.salvage }}</td>
+        </tr>
+     <tr>
+            <td>购买成本 </td>
+            <td>{{ r.procure }}</td>
+        </tr>
+     <tr>
+            <td>管理等费用 </td>
+            <td>{{ r.manage }}</td>
+        </tr>
+
+    </table>
+{% else %}
+第一阶段仿真结果尚未计算完成！请完成第一阶段仿真
+{% endif %}
+{% endblock %}
