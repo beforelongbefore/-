@@ -58,3 +58,8 @@ class Decisions2Form(FlaskForm):
     location = StringField('选址', validators=[DataRequired()])
     submit = SubmitField('保存')
 
+class GameForm(FlaskForm):
+    ps = StringField('备注', validators=[DataRequired()])
+    state = StringField('选址', validators=[DataRequired()])
+    submit = SubmitField('保存')
+

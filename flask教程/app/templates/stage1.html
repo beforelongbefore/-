@@ -11,7 +11,10 @@
 
         {% from "_field.html" import render_field %}
         <table>
-            <a href="{{ url_for('help_satge1', gameid = g.id) }}">游戏参数说明</a>
+
+            <span class="help_popup">
+                <a href="{{ url_for('help_satge1', gameid = g.id) }}">游戏参数说明</a>
+            </span>
             {{ render_field(form.quality)}}
             {{ render_field(form.batch)}}
             {{ render_field(form.contract)}}
@@ -32,7 +35,7 @@
     <br>
     <a href="{{ url_for('simulation', gameid = g.id) }}">开始仿真</a></h1>
     {% else %}
-    <br>仿真结束！可查看结果和进入第二阶段。
+    <br><a href="{{ url_for('simulation', gameid = g.id) }}">查看仿真结果</a></h1>
 {% endif %}
 
 

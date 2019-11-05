@@ -11,7 +11,9 @@ from werkzeug.urls import url_parse
 from app import db
 from app.forms import RegistrationForm
 from datetime import datetime
-from app.forms import EditProfileForm, Decisions1Form, Decisions2Form
+from app.forms import EditProfileForm, Decisions1Form, Decisions2Form, GameForm
+import subprocess
+import os
 
 
 @app.route('/')
@@ -76,16 +78,14 @@ def register():
 
 
 
-@app.route('/user/<username>')
+@app.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
     games = Game.query.filter_by(player=current_user).all()
-    return render_template('user.html', user=user, posts=posts, games=games)
+    form = GameForm()
+
+    return render_template('user.html', user=user, games=games, form=form)
 
 
 
@@ -120,8 +120,16 @@ def decisions_1(gameid):
     d = Decision1.query.filter_by(gameid=gameid).first() #知道gameid，并且默认知道stage为1，所以可以定位
     #gid = Game.query.filter_by(id=gameid).first_or_404().gid
     g = d.game
+    g.last_time=datetime.utcnow()
+    db.session.commit()
     form = Decisions1Form()
     if form.validate_on_submit():
+        # 提交保存的时候，清除该文件，因为这会在后面仿真的时候判断sim是否完成
+        my_file = 'result2.csv'
+        if os.path.exists(my_file):
+            os.remove(my_file)
+        else:
+            pass
         d.quality = form.quality.data
         d.batch = form.batch.data
         d.stock = form.stock.data
@@ -143,10 +151,14 @@ def help_satge1(gameid):
     d = Decision1.query.filter_by(gameid=gameid).first() #知道gameid，并且默认知道stage为1，所以可以定位
     #gid = Game.query.filter_by(id=gameid).first_or_404().gid
     g = d.game
-
     return render_template('help_stage1.html', title='第一阶段',
                         g=g) #注意这里传进网页的是game对象
 
+
+@app.route('/stage1/help/pop')
+@login_required
+def help_satge1_pop():
+    return render_template('help_stage1_pop.html', title='第一阶段')
 
 
 
@@ -159,7 +171,7 @@ def newgame():
         maxid=maxg.gid #该用户当前的游戏最大场次
     else:
         maxid=0
-    g=Game(gid=maxid+1, stage=1, user_id=current_user.id) #向数据库中添加新游戏场次
+    g=Game(gid=maxid+1, stage=1, user_id=current_user.id, start_time=datetime.utcnow(), last_time=datetime.utcnow(),state=1,ps='无') #向数据库中添加新游戏场次
     db.session.add(g)
     db.session.commit()
     gameid = Game.query.filter_by(gid=maxid+1, user_id=current_user.id).first_or_404().id
@@ -201,7 +213,18 @@ def simulation(gameid):
     r = Result1(gameid=gameid)
     db.session.add(r)
     db.session.commit()
-    return render_template('simulation.html',title='仿真界面', gameid=gameid)
+    #print(os.getcwd())
+
+    my_file = 'result2.csv'
+    if os.path.exists(my_file):
+        with open('app/simulation/export3/test.txt','r') as f:
+            result=f.read()
+            return result
+    else:#如果并没有仿真完成
+        args = ['user']
+        cmd = 'sh app/simulation/subrun2.sh' + ' ' + str(args[0])
+        p = subprocess.Popen(cmd, shell=True)
+        return render_template('simulation.html',title='仿真界面', gameid=gameid)
 
 @app.route('/stage1/result/<gameid>', methods=['GET', 'POST'])
 @login_required

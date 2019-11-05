@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+
+<body>
+<span id="it1">内容</span> <a href="javascript:;" id="a1" οnclick="cg(this)">修改</a>
+
+<span id="it2">内容</span> <a href="javascript:;" id="a2" οnclick="cg(this)">修改</a>
+
+<span id="it3">内容</span> <a href="javascript:;" id="a3" οnclick="cg(this)">修改</a>
+
+<span id="it4">内容</span> <a href="javascript:;" id="a4" οnclick="cg(this)">修改</a>
+
+<span id="it5">内容</span> <a href="javascript:;" id="a5" οnclick="cg(this)">修改</a>
+</body>
+<script>
+
+cg = function (obj) {
+
+var o = document.getElementById("it" + obj.id.toString().substr(1));
+
+if (o.childNodes[0].value) {
+
+o.innerHTML = o.childNodes[0].value;
+
+} else {
+
+o.innerHTML = "<input type='text' value='" + document.getElementById("it" + obj.id.toString().substr(
+
+1)).innerHTML + "' />";
+
+}
+
+}
+
+</script>
+
+</html>

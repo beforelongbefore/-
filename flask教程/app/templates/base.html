@@ -25,12 +25,14 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('index') }}">主页</a></li>
+                    {% if not current_user.is_anonymous %}
+                    <li><a href="{{ url_for('user', username=current_user.username) }}">我的游戏</a></li>
+                    {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">登录</a></li>
                     {% else %}
-                    <li><a href="{{ url_for('user', username=current_user.username) }}">我的游戏</a></li>
                     <li><a href="{{ url_for('logout') }}">退出登录</a></li>
                     {% endif %}
                 </ul>
@@ -57,3 +59,52 @@
 
 
 
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+
+    <script>
+
+        $(function () {
+            var timer = null;
+            var xhr = null;
+            $('.help_popup').hover(
+                function(event) {
+                    // mouse in event handler
+                    var elem = $(event.currentTarget);
+                    timer = setTimeout(function() {
+                        timer = null;
+                        xhr = $.ajax(
+                            '/stage1/help/'+'pop').done(
+                                function(data) {
+                                    xhr = null;
+                                    elem.popover({
+                                        trigger: 'manual',
+                                        html: true,
+                                        animation: false,
+                                        container: elem,
+                                        content: data
+                                    }).popover('show');
+                                }
+                            );
+                    }, 1000);
+                },
+                function(event) {
+                    // mouse out event handler
+                    var elem = $(event.currentTarget);
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    else if (xhr) {
+                        xhr.abort();
+                        xhr = null;
+                    }
+                    else {
+                        elem.popover('destroy');
+                    }
+                }
+            );
+        });
+    </script>
+{% endblock %}

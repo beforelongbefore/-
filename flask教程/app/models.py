@@ -45,10 +45,37 @@ class Game(db.Model):
     gid = db.Column(db.Integer)
     stage = db.Column(db.Integer) #注意这里的stage记录的是最大值
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    last_time = db.Column(db.DateTime, default=datetime.utcnow)
+    ps = db.Column(db.String(140))
+    # 创建时间，上次时间，备注信息, 隶属班级
     decision1 = db.relationship('Decision1', backref='game', lazy='dynamic')
     decision2 = db.relationship('Decision2', backref='game', lazy='dynamic')
     result1 = db.relationship('Result1', backref='game', lazy='dynamic')
+    state = db.Column(db.Integer)  # 是否已删除 0删除 1正常
     #增加备注，删除功能
+
+"""
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(140))
+    adminid = db.relationship('user', backref='admin', lazy='dynamic')
+    gid = db.Column(db.Integer)
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    state = db.Column(db.Integer)  # 是否已删除 0删除 1正常
+    #增加备注，删除功能
+
+groups = db.Table(
+    'followers',
+    db.Column('group_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
+
+还要在game中添加属性，表明此game是否属于团队模式，如果是，值为团队id，如果否则为0
+
+"""
+
+
 
 class Decision1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
